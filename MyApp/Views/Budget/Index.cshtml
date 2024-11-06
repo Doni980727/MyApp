@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Budget Overview";
+}
+
+<h2>Budget Overview</h2>
+
+<p>Total Income: @ViewBag.TotalIncome kr</p>
+<p>Total Expense: @ViewBag.TotalExpense kr</p>
+<p>Balance: @ViewBag.Balance kr</p>
+
+<h3>Transactions</h3>
+<div class="col-sm-4">
+    <table class="table table-borderless table-sm">
+        <tr>
+            <th>Description</th>
+            <th>Type</th>
+            <th>Amount</th>
+        </tr>
+        @foreach (var transaction in Model)
+        {
+            <tr>
+                <td>@transaction.Description</td>
+                <td>@transaction.Type</td>
+                <td>@transaction.Amount kr</td>
+            </tr>
+        }
+    </table>
+</div>
+
+<a href="/Budget/AddTransaction"><button class="btn btn-primary mt-2">Add New Transaction</button></a>

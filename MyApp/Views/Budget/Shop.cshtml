@@ -1,0 +1,82 @@
+﻿@model MyApp.Models.Transaction
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<p>Balance: @ViewBag.Balance kr</p>
+
+<div class="col-sm-5 mt-2">
+    <table class="table table-borderless table-sm">
+        <tr>
+            <th>Item</th>
+            <th>Price</th>
+            <th></th>
+        </tr>
+        <tr>
+            <td>@ViewBag.item1.Name</td>
+            <td>@ViewBag.item1.Price kr</td>
+            <td>
+                <form asp-action="Shop" method="post">
+                    <input asp-for="Amount" type="hidden" value="@ViewBag.item1.Price">
+                    <input asp-for="Type" type="hidden" value="Expense">
+                    <input asp-for="Description" type="hidden" value="@ViewBag.item1.Name">
+
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>@ViewBag.item2.Name</td>
+            <td>@ViewBag.item2.Price kr</td>
+            <td>
+                <form asp-action="Shop" method="post">
+                    <input asp-for="Amount" type="hidden" value="@ViewBag.item2.Price">
+                    <input asp-for="Type" type="hidden" value="Expense">
+                    <input asp-for="Description" type="hidden" value="@ViewBag.item2.Name">
+
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>@ViewBag.item3.Name</td>
+            <td>@ViewBag.item3.Price kr</td>
+            <td>
+                <form asp-action="Shop" method="post">
+                    <input asp-for="Amount" type="hidden" value="@ViewBag.item3.Price">
+                    <input asp-for="Type" type="hidden" value="Expense">
+                    <input asp-for="Description" type="hidden" value="@ViewBag.item3.Name">
+
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>@ViewBag.item4.Name</td>
+            <td>@ViewBag.item4.Price kr</td>
+            <td>
+                <form asp-action="Shop" method="post">
+                    <input asp-for="Amount" type="hidden" value="@ViewBag.item4.Price">
+                    <input asp-for="Type" type="hidden" value="Expense">
+                    <input asp-for="Description" type="hidden" value="@ViewBag.item4.Name">
+
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>@ViewBag.item5.Name</td>
+            <td>@ViewBag.item5.Price kr</td>
+            <td>
+                <form asp-action="Shop" method="post">
+                    <input asp-for="Amount" type="hidden" value="@ViewBag.item5.Price">
+                    <input asp-for="Type" type="hidden" value="Expense">
+                    <input asp-for="Description" type="hidden" value="@ViewBag.item5.Name">
+
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>

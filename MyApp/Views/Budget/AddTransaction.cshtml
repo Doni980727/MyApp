@@ -1,0 +1,27 @@
+﻿@model MyApp.Models.Transaction
+@{
+    ViewData["Title"] = "Add New Transaction";
+}
+
+<h2>Add New Transaction</h2>
+
+<p>Balance: @ViewBag.Balance kr</p>
+
+<form asp-action="AddTransaction" method="post" class="col-sm-3">
+    <div>
+        <label>Amount:</label>
+        <input asp-for="Amount" type="number" placeholder="1000" class="form-control"/>
+    </div>
+    <div>
+        <label class="mt-3">Type:</label>
+        <select asp-for="Type" class="form-select" style="width: 125px">
+            <option>Income</option>
+            <option>Expense</option>
+        </select>
+    </div>
+    <div>
+        <label class="mt-3">Description:</label>
+        <input asp-for="Description" type="text" placeholder="Add a description" class="form-control"/>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Add Transaction</button>
+</form>
