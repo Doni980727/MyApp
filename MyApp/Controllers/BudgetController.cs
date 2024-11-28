@@ -69,35 +69,6 @@ namespace MyApp.Controllers
             return View(transactions);
         }
 
-        public IActionResult Shop()
-        {
-            ViewData["Item1"] = new Item() { Id = 1, Name = "Sweater", Price = 399 };
-            ViewData["Item2"] = new Item() { Id = 2, Name = "Chinos", Price = 799 };
-            ViewData["Item3"] = new Item() { Id = 3, Name = "Shirt", Price = 699 };
-            ViewData["Item4"] = new Item() { Id = 4, Name = "Jacket", Price = 2199 };
-            ViewData["Item5"] = new Item() { Id = 5, Name = "Shoes", Price = 899 };
-
-            var (totalIncome, totalExpense, balance) = GetTotalsFromSession();
-
-            ViewBag.Balance = balance;
-
-            return View(); 
-        }
-
-        [HttpPost]
-        public IActionResult Shop(Transaction transaction)
-        {
-            if (ModelState.IsValid)
-            {
-                var transactions = GetTransactionsFromSession();
-                transactions.Add(transaction);
-                SaveTransactionsToSession(transactions);
-                CalculateTotals();
-                return RedirectToAction("Shop");
-            }
-            return View(transactions);
-        }
-
         public IActionResult AddTransaction()
         {
             var (totalIncome, totalExpense, balance) = GetTotalsFromSession();
@@ -126,6 +97,35 @@ namespace MyApp.Controllers
             ViewBag.Balance = balance;
 
             return View(transaction);
+        }
+
+        public IActionResult Shop()
+        {
+            ViewData["Item1"] = new Item() { Id = 1, Name = "Sweater", Price = 399 };
+            ViewData["Item2"] = new Item() { Id = 2, Name = "Chinos", Price = 799 };
+            ViewData["Item3"] = new Item() { Id = 3, Name = "Shirt", Price = 699 };
+            ViewData["Item4"] = new Item() { Id = 4, Name = "Jacket", Price = 2199 };
+            ViewData["Item5"] = new Item() { Id = 5, Name = "Shoes", Price = 899 };
+
+            var (totalIncome, totalExpense, balance) = GetTotalsFromSession();
+
+            ViewBag.Balance = balance;
+
+            return View(); 
+        }
+
+        [HttpPost]
+        public IActionResult Shop(Transaction transaction)
+        {
+            if (ModelState.IsValid)
+            {
+                var transactions = GetTransactionsFromSession();
+                transactions.Add(transaction);
+                SaveTransactionsToSession(transactions);
+                CalculateTotals();
+                return RedirectToAction("Shop");
+            }
+            return View(transactions);
         }
     }
 }
