@@ -31,11 +31,42 @@
                 <td>@transaction.Type</td>
                 <td>@transaction.Amount kr</td>
                 <td>
-                    <a asp-action="EditTransaction" asp-route-id="@transaction.TransactionId">Edit</a>
+                    <a asp-action="EditTransaction" asp-route-id="@transaction.TransactionId"> <button>Edit</button></a>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+                        Delete
+                    </button>
+                    <!-- The Modal -->
+                    <div class="modal" id="myModal">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h6 class="modal-title">Confirm deletion</h6>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <!-- Modal body -->
+                                <div class="modal-body">
+                                    <p>Are you sure you want to delete @transaction.Description?<br /><br /> Please confirm to proceed.</p>
+                                </div>
+
+                                <!-- Modal footer -->
+                                <div class="modal-footer">
+                                    <form asp-action="DeleteTransaction" asp-route-id="@transaction.TransactionId" method="post">
+                                        <button type="submit" class="btn btn-success">Confirm</button>
+                                    </form>
+                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
                 </td>
             </tr>
         }
     </table>
+   
 </div>
 
 <a href="/Budget/AddTransaction"><button class="btn btn-primary mt-2">Add New Transaction</button></a>

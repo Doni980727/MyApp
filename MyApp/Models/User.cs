@@ -5,7 +5,7 @@ namespace MyApp.Models
     public class User
     {
         [Key] // Primärnyckel
-        public int UserId { get; set; }
+        public int UsersId { get; set; }
 
         [Required] // Obligatoriskt fält
         [MaxLength(50)] // Maxlängd

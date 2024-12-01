@@ -8,6 +8,6 @@ namespace MyApp.Models
         public decimal Amount { get; set; }
         public string Type { get; set; }  // "Income" or "Expense"
         public string Description { get; set; }
-        public int UserId { get; set; }
+        public int UsersId { get; set; }
     }
 }

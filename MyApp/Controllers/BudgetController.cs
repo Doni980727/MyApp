@@ -68,7 +68,7 @@ namespace MyApp.Controllers
         {
             var currentUser = _context.Users.FirstOrDefault(u => u.Username == User.Identity.Name);
 
-            var transactions = _context.Transaction.Where(t => t.UserId == currentUser.UserId).ToList();
+            var transactions = _context.Transaction.Where(t => t.UsersId == currentUser.UsersId).ToList();
 
             decimal totalIncome = transactions.Where(t => t.Type == "Income").Sum(t => t.Amount);
             decimal totalExpense = transactions.Where(t => t.Type == "Expense").Sum(t => t.Amount);
@@ -84,7 +84,7 @@ namespace MyApp.Controllers
         public IActionResult AddTransaction()
         {
             var currentUser = _context.Users.FirstOrDefault(u => u.Username == User.Identity.Name);
-            var transaction = _context.Transaction.Where(t => t.UserId == currentUser.UserId).ToList();
+            var transaction = _context.Transaction.Where(t => t.UsersId == currentUser.UsersId).ToList();
 
             decimal totalIncome = transaction.Where(t => t.Type == "Income").Sum(t => t.Amount);
             decimal totalExpense = transaction.Where(t => t.Type == "Expense").Sum(t => t.Amount);
@@ -104,7 +104,7 @@ namespace MyApp.Controllers
 
                 if (currentUser != null)
                 {
-                    transaction.UserId = currentUser.UserId;
+                    transaction.UsersId = currentUser.UsersId;
 
                     _context.Transaction.Add(transaction);
                     _context.SaveChanges();
@@ -119,7 +119,7 @@ namespace MyApp.Controllers
         public IActionResult EditTransaction(int id)
         { 
             var transaction = _context.Transaction.FirstOrDefault(t => t.TransactionId == id && 
-                t.UserId == _context.Users.FirstOrDefault(u => u.Username == User.Identity.Name).UserId);
+                t.UsersId == _context.Users.FirstOrDefault(u => u.Username == User.Identity.Name).UsersId);
 
             if (transaction == null)
             {
@@ -138,7 +138,8 @@ namespace MyApp.Controllers
             if (ModelState.IsValid)
             {
                 var currentUser = _context.Users.FirstOrDefault(u => u.Username == User.Identity.Name);
-                var transaction = _context.Transaction.FirstOrDefault(t => t.TransactionId == updatedTransaction.TransactionId && t.UserId == currentUser.UserId);
+                var transaction = _context.Transaction.FirstOrDefault(
+                    t => t.TransactionId == updatedTransaction.TransactionId && t.UsersId == currentUser.UsersId);
 
                 if (transaction == null)
                 {
@@ -152,6 +153,22 @@ namespace MyApp.Controllers
             }
 
             return View(updatedTransaction);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteTransaction(int id)
+        {
+            var currentUser = _context.Users.FirstOrDefault(u => u.Username == User.Identity.Name);
+            var transaction = _context.Transaction.FirstOrDefault(t => t.TransactionId == id && t.UsersId == currentUser.UsersId);
+
+            if (transaction == null)
+            {
+                return NotFound();
+            }
+
+            _context.Transaction.Remove(transaction);
+            _context.SaveChanges();
+            return RedirectToAction("Index"); 
         }
 
         /*public IActionResult Shop()
