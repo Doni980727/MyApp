@@ -1,19 +1,30 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using MyApp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(new Microsoft.AspNetCore.Mvc.Authorization.AuthorizeFilter());
+});
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddAuthentication("CookieAuth")
+    .AddCookie("CookieAuth", options =>
+    {
+        options.LoginPath = "/User/Login";
+    });
+
+
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Ställ in sessionens utgångstid
-    options.Cookie.HttpOnly = true; // Säkerhetsinställning för att skydda cookien
-    options.Cookie.IsEssential = true; // Nödvändigt för att sessionen ska fungera utan samtycke
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
 var app = builder.Build();

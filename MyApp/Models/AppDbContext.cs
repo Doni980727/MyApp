@@ -8,5 +8,6 @@ namespace MyApp.Models
 
         // Lägg till DbSet för användare
         public DbSet<User> Users { get; set; }
+        public DbSet<Transaction> Transaction { get; set; }
     }
 }

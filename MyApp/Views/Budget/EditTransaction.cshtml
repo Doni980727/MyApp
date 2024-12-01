@@ -1,0 +1,20 @@
+﻿@model MyApp.Models.Transaction
+
+<h2>Edit Transaction</h2>
+
+<form asp-action="EditTransaction" method="post">
+    <input type="hidden" asp-for="TransactionId" />
+    <div>
+        <label>Type: @ViewBag.Type</label>
+        <input asp-for="Type" type="hidden" value="@ViewBag.Type"/>
+    </div>
+    <div>
+        <label>Description: @ViewBag.Description</label>
+        <input asp-for="Description" type="hidden" value="@ViewBag.Description"/>
+    </div>
+    <div>
+        <label>Amount</label>
+        <input asp-for="Amount" />
+    </div>
+    <button type="submit">Save</button>
+</form>

@@ -1,15 +1,22 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MyApp.Models;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace MyApp.Controllers
 {
+    [Authorize]
     public class BudgetController : Controller
     {
-        private static List<Transaction> transactions = new List<Transaction>();
+        private readonly AppDbContext _context;
 
-        private List<Transaction> GetTransactionsFromSession()
+        public BudgetController(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        /*private List<Transaction> GetTransactionsFromSession()
         {
             var sessionData = HttpContext.Session.GetString("Transactions");
             if (sessionData != null)
@@ -55,12 +62,17 @@ namespace MyApp.Controllers
             decimal.TryParse(HttpContext.Session.GetString("Balance"), out decimal balance);
 
             return (totalIncome, totalExpense, balance);
-        }
+        }*/
 
         public IActionResult Index()
         {
-            var transactions = GetTransactionsFromSession();
-            var (totalIncome, totalExpense, balance) = GetTotalsFromSession();
+            var currentUser = _context.Users.FirstOrDefault(u => u.Username == User.Identity.Name);
+
+            var transactions = _context.Transaction.Where(t => t.UserId == currentUser.UserId).ToList();
+
+            decimal totalIncome = transactions.Where(t => t.Type == "Income").Sum(t => t.Amount);
+            decimal totalExpense = transactions.Where(t => t.Type == "Expense").Sum(t => t.Amount);
+            decimal balance = totalIncome - totalExpense;
 
             ViewBag.TotalIncome = totalIncome;
             ViewBag.TotalExpense = totalExpense;
@@ -71,7 +83,12 @@ namespace MyApp.Controllers
 
         public IActionResult AddTransaction()
         {
-            var (totalIncome, totalExpense, balance) = GetTotalsFromSession();
+            var currentUser = _context.Users.FirstOrDefault(u => u.Username == User.Identity.Name);
+            var transaction = _context.Transaction.Where(t => t.UserId == currentUser.UserId).ToList();
+
+            decimal totalIncome = transaction.Where(t => t.Type == "Income").Sum(t => t.Amount);
+            decimal totalExpense = transaction.Where(t => t.Type == "Expense").Sum(t => t.Amount);
+            decimal balance = totalIncome - totalExpense;
 
             ViewBag.Balance = balance;
 
@@ -83,23 +100,61 @@ namespace MyApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var transactions = GetTransactionsFromSession();
-                transactions.Add(transaction);
-                SaveTransactionsToSession(transactions);
-                CalculateTotals();
-                return RedirectToAction("Index");
+                var currentUser = _context.Users.FirstOrDefault(u => u.Username == User.Identity.Name);
+
+                if (currentUser != null)
+                {
+                    transaction.UserId = currentUser.UserId;
+
+                    _context.Transaction.Add(transaction);
+                    _context.SaveChanges();
+                    return RedirectToAction("Index");
+                }
             }
-
-            var (totalIncome, totalExpense, balance) = GetTotalsFromSession();
-
-            ViewBag.TotalIncome = totalIncome;
-            ViewBag.TotalExpense = totalExpense;
-            ViewBag.Balance = balance;
 
             return View(transaction);
         }
 
-        public IActionResult Shop()
+        [HttpGet]
+        public IActionResult EditTransaction(int id)
+        { 
+            var transaction = _context.Transaction.FirstOrDefault(t => t.TransactionId == id && 
+                t.UserId == _context.Users.FirstOrDefault(u => u.Username == User.Identity.Name).UserId);
+
+            if (transaction == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Type = transaction.Type;
+            ViewBag.Description = transaction.Description;
+
+            return View(transaction);
+        }
+
+        [HttpPost]
+        public IActionResult EditTransaction(Transaction updatedTransaction)
+        {
+            if (ModelState.IsValid)
+            {
+                var currentUser = _context.Users.FirstOrDefault(u => u.Username == User.Identity.Name);
+                var transaction = _context.Transaction.FirstOrDefault(t => t.TransactionId == updatedTransaction.TransactionId && t.UserId == currentUser.UserId);
+
+                if (transaction == null)
+                {
+                    return NotFound();
+                }
+
+                transaction.Amount = updatedTransaction.Amount;
+
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            return View(updatedTransaction);
+        }
+
+        /*public IActionResult Shop()
         {
             ViewData["Item1"] = new Item() { Id = 1, Name = "Sweater", Price = 399 };
             ViewData["Item2"] = new Item() { Id = 2, Name = "Chinos", Price = 799 };
@@ -126,6 +181,6 @@ namespace MyApp.Controllers
                 return RedirectToAction("Shop");
             }
             return View(transactions);
-        }
+        }*/
     }
 }

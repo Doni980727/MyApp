@@ -2,6 +2,14 @@
     ViewData["Title"] = "Budget Overview";
 }
 
+@if (User.Identity.IsAuthenticated)
+{
+    <p>Inloggad som @User.Identity.Name</p>
+    <form asp-action="Logout" asp-controller="User" method="post">
+        <button type="submit">Logga ut</button>
+    </form>
+}
+
 <h2>Budget Overview</h2>
 
 <p>Total Income: @ViewBag.TotalIncome kr</p>
@@ -22,6 +30,9 @@
                 <td>@transaction.Description</td>
                 <td>@transaction.Type</td>
                 <td>@transaction.Amount kr</td>
+                <td>
+                    <a asp-action="EditTransaction" asp-route-id="@transaction.TransactionId">Edit</a>
+                </td>
             </tr>
         }
     </table>

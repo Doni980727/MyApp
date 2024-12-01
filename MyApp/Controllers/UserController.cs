@@ -1,72 +1,91 @@
 ﻿using MyApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
 
 namespace MyApp.Controllers
 {
-    public class AccountController : Controller
+    [AllowAnonymous]
+    public class UserController : Controller
     {
         private readonly AppDbContext _context;
 
-        public AccountController(AppDbContext context)
+        public UserController(AppDbContext context)
         {
             _context = context;
         }
 
-        // GET: /Account/Register
+        // GET: /User/Register
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
-        // POST: /Account/Register
+        // POST: /User/Register
         [HttpPost]
         public IActionResult Register(string username, string password, string email)
         {
-            // Kontrollera om användarnamnet redan finns
             if (_context.Users.Any(u => u.Username == username))
             {
                 ViewBag.ErrorMessage = "Username already exists.";
                 return View();
             }
 
-            // Skapa en ny användare och spara i databasen
             var newUser = new User
             {
                 Username = username,
-                Password = password, // OBS! Hasha lösenord i verkliga applikationer
+                Password = password,
                 Email = email
             };
 
             _context.Users.Add(newUser);
-            _context.SaveChanges(); // Spara ändringarna till databasen
+            _context.SaveChanges();
 
             TempData["SuccessMessage"] = "Registration successful. You can now log in.";
             return RedirectToAction("Login");
         }
 
-        // GET: /Account/Login
+        // GET: /User/Login
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
-        // POST: /Account/Login
+        // POST: /User/Login
         [HttpPost]
-        public IActionResult Login(string username, string password)
+        public async Task<IActionResult> Login(string username, string password)
         {
-            // Kontrollera om användaren finns i databasen
             var user = _context.Users.FirstOrDefault(u => u.Username == username && u.Password == password);
 
             if (user != null)
             {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.Email, user.Email)
+                };
+
+                var identity = new ClaimsIdentity(claims, "CookieAuth");
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync("CookieAuth", principal);
+
                 TempData["SuccessMessage"] = $"Welcome, {username}!";
                 return RedirectToAction("Index", "Budget");
             }
 
             ViewBag.ErrorMessage = "Invalid username or password.";
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync("CookieAuth");
+            return RedirectToAction("Login", "User");
         }
     }
 }
